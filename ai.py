@@ -1,34 +1,45 @@
 import chess
 import math
+import chess.polyglot
+import random
 class Game():
     def __init__(self):
         self.board=chess.Board()
-        self.counter=0
+        self.num_played_moves=0
         self.turn="w"
         self.boards=[]
-        self.knight_point_board=[[2,3,4,4,4,4,3,2],
-                                 [3,4,6,6,6,6,4,3],
-                                 [4,6,8,8,8,8,6,4],
-                                 [4,6,8,10,10,8,6,4],
-                                 [4,6,8,10,10,8,6,4],
-                                 [4,6,8,8,8,8,6,4],
-                                 [3,4,6,6,6,6,4,3],
-                                 [2,3,4,4,4,4,3,2]]
+        self.takes=[]
+        self.checks=[]
+        self.converted_board=[['bR', 'bN', 'bB', 'bQ', 'bK', 'bB', 'bN', 'bR'], ['bp', 'bp', 'bp', 'bp', 'bp', 'bp', 'bp', 'bp'], ['--', '--', '--', '--', '--', '--', '--', '--'], ['--', '--', '--', '--', '--', '--', '--', '--'], ['--', '--', '--', '--', '--', '--', '--', '--'], ['--', '--', '--', '--', '--', '--', '--', '--'], ['wp', 'wp', 'wp', 'wp', 'wp', 'wp', 'wp', 'wp'], ['wR', 'wN', 'wB', 'wQ', 'wK', 'wB', 'wN', 'wR']]
+
+
+
+        #Creating sample boards for finding the best place for a piece in the chess board.
+        self.knight_point_board=[
+            [1, 2, 2, 2, 2, 2, 2, 1],
+            [2,2,2,5,5,2,2,1],
+            [3,4,5,4,4,5,4,3],
+            [3,4,6,8,8,6,4,3],
+            [3,4,6,8,8,6,4,3],
+            [3,4,5,4,4,5,4,3],
+            [2,2,2,5,5,2,2,1],
+            [1,2,2,2,2,2,2,1]]
+
         self.white_pawn_point_board = [[9,10, 10, 11, 11, 10, 10, 9],
                                    [1, 4, 6, 6, 6, 6, 4, 1],
-                                   [1, 6, 6, 6, 6, 6, 6, 1],
-                                   [1, 6, 6, 12, 12, 6, 6,1],
+                                   [1, 4, 4, 4, 4, 4, 4,1],
                                    [1, 6, 9, 12, 12, 9, 6,1],
-                                   [1, 6, 9, 10, 10, 9, 6, 1],
-                                   [1, 4, 6, 6, 6, 6, 6, 1],
+                                   [1, 6, 9, 12, 12, 9, 6, 1],
+                                   [1, 6, 6, 10, 10, 6, 6,1],
+                                    [1, 4, 6, 6, 6, 6, 4, 1],
                                    [0, 0, 0, 0, 0, 0, 0, 0]]
         self.black_pawn_point_board = [[0, 0, 0, 0, 0, 0, 0, 0],
-                                   [1, 4, 6, 6, 6, 6, 4, 1],
-                                   [1, 6, 6, 6, 6, 6, 6, 1],
-                                   [1, 6, 6, 12, 12, 6, 6,1],
-                                   [1, 6, 9, 12, 12, 9, 6,1],
-                                   [1, 6, 9, 10, 10, 9, 6, 1],
-                                   [1, 4, 6, 6, 6, 6, 6, 1],
+                                       [1, 4, 6, 6, 6, 6, 4, 1],
+                                       [1, 6, 6, 10, 10, 6, 6, 1],
+                                       [1, 6, 9, 12, 12, 9, 6, 1],
+                                        [1, 6, 9, 12, 12, 9, 6,1],
+                                       [1, 4, 4, 4, 4, 4, 4, 1],
+                                       [1, 4, 6, 6, 6, 6, 4, 1],
                                    [9,10, 10, 11, 11, 10, 10, 9]]
 
         self.white_bishop_point_board =              [[8, 8, 8, 8, 8, 8, 8, 8],
@@ -53,10 +64,10 @@ class Game():
                                          [0, 0, 0, 0, 0, 0,0, 0],
                                          [0, 0, 0, 0, 0, 0, 0, 0],
                                          [1, 1, 1, 1, 1, 1, 1, 1],
-                                         [3, 3, 3, 2, 2, 3, 3, 3],
+                                         [3, 3, 3, 1, 1, 3, 3, 3],
                                          [3, 5, 5, 2, 2, 3, 5, 5], ]
         self.black_king_point_board = [ [3, 5, 5, 2, 2, 3, 5, 5],
-                                        [3, 3, 3, 2, 2, 3, 3, 3],
+                                        [3, 3, 3, 1, 1, 3, 3, 3],
                                         [1, 1, 1, 1, 1, 1, 1, 1],
                                        [0, 0, 0, 0, 0, 0, 0, 0],
                                        [0, 0, 0, 0, 0, 0, 0, 0],
@@ -73,10 +84,63 @@ class Game():
                                        [1, 2, 2, 2, 2, 2, 2, 1],
                                        [1, 1, 1, 1, 1, 1, 1, 1],
                                         ]
+        self.rook_point_board =         [[1, 2, 4, 5, 5, 4, 2, 1],
+                                         [1, 2, 4, 5, 5, 4, 2, 1],
+                                         [1, 2, 4, 5, 5, 4, 2, 1],
+                                         [1, 2, 4, 5, 5, 4, 2, 1],
+                                         [1, 2, 4, 5, 5, 4, 2, 1],
+                                         [1, 2, 4, 5, 5, 4, 2, 1],
+                                         [1, 2, 4, 5, 5, 4, 2, 1],
+                                         [1, 2, 4, 5, 5, 4, 2, 1],
+                                         ]
+        self.white_queen_point_board_middlegame=[[8, 9, 11, 12, 12, 11, 9, 8],
+                                         [7, 8, 10, 11, 11, 10, 8, 7],
+                                         [6, 7, 9, 10, 10, 9, 7, 6],
+                                         [5, 6, 8, 9, 9, 8, 6, 5],
+                                         [4,5, 7, 8, 8, 7, 5, 4],
+                                         [3, 4, 6, 7, 7, 6, 4, 3],
+                                         [2, 3, 5, 6, 6, 5, 3, 2],
+                                         [1, 2, 4, 5, 5, 4, 2, 1],
+                                         ]
+        self.black_queen_point_board_middlegame=[[1, 2, 4, 5, 5, 4, 2, 1],
+                                      [2, 3, 5, 6, 6, 5, 3, 2],
+                                      [3, 4, 6, 7, 7, 6, 4, 3],
+                                      [4, 5, 7, 8, 8, 7, 5, 4],
+                                       [5, 6, 8, 9, 9, 8, 6, 5],
+                                      [6, 7, 9, 10, 10, 9, 7, 6],
+                                      [7, 8, 10, 11, 11, 10, 8, 7],
+                                      [8, 9, 11, 12, 12, 11, 9, 8],
+                                         ]
+        self.white_queen_point_board_opening = [
+                                        [-10, -10, -10, -10, -10, -10, -10, -10],
+                                        [-10, -10, -10, -10, -10, -10, -10, -10],
+                                        [-10, -10, -10, -10, -10, -10, -10, -10],
+                                       [-10, -10, -10, -10, -10, -10, -10, -10],
+                                       [-5, -5, -5, -5, -5, -5, -5, -5],
+                                       [-5, -5, -5, -5, -5, -5, -5, -5],
+                                       [-5, -5, -5, 5, 4, 3, -5, -5],
+                                       [-5, -5, -5, 4, 0, 0, 0, 0],]
+        self.black_queen_point_board_opening = [[-5, -5, -5, 4, 0, 0, 0, 0],
+                                                [-5, -5, -5, 5, 4, 3, -5, -5],
+                                                [-5, -5, -5, -5, -5, -5, -5, -5],
+                                                [-5, -5, -5, -5, -5, -5, -5, -5],
+                                                [-10, -10, -10, -10, -10, -10, -10, -10],
+                                                [-10, -10, -10, -10, -10, -10, -10, -10],
+                                                [-10, -10, -10, -10, -10, -10, -10, -10],
+                                                [-10, -10, -10, -10, -10, -10, -10, -10],]
 
+    #A function for findin all the possible moves
     def actions(self):
         moves=list(self.board.generate_legal_moves())
         return moves
+    def book(self):
+        moves=[]
+        with chess.polyglot.open_reader("data/opening_book.bin") as reader:
+             for entry in reader.find_all(self.board):
+                 moves.append(entry.move)
+        return moves
+
+    #A function which returns the winner if there is one or "=" if it is draw else False
     def winner(self):
 
         if self.board.is_checkmate():
@@ -88,14 +152,34 @@ class Game():
         elif self.board.is_fifty_moves() or self.board.is_fivefold_repetition() or self.board.is_insufficient_material():
             return "="
         return False
+
+    #A function for making the move and switching the turn
     def play_move(self,move,is_user_move):
 
 
         if not(is_user_move):
             self.board.push(move)
-            self.boards.append(self.board)
+            str_move=str(move)
 
 
+
+            converted_move=self.move_conversion(move)
+            piece=converted_move[0]
+            target=converted_move[1]
+
+            self.converted_board[piece[1]][piece[0]],self.converted_board[target[1]][target[0]]=self.converted_board[target[1]][target[0]],self.converted_board[piece[1]][piece[0]]
+            if str_move == "e1g1":
+                self.converted_board[7][7], self.converted_board[7][5] = \
+                self.converted_board[7][5], self.converted_board[7][7]
+            elif str_move=="e1c1":
+                self.converted_board[7][0], self.converted_board[7][2] = \
+                self.converted_board[7][2], self.converted_board[7][0]
+            elif str_move == "e8g8":
+                self.converted_board[0][7], self.converted_board[0][5] = \
+                self.converted_board[0][5], self.converted_board[0][7]
+            elif str_move=="e8c8":
+                self.converted_board[0][0], self.converted_board[0][2] = \
+                self.converted_board[0][2], self.converted_board[0][0]
             if(self.turn=="w"):
 
 
@@ -104,41 +188,62 @@ class Game():
                 self.turn="w"
         else:
 
-            self.board.push_san(move)
-            self.boards.append(self.board)
+            self.board.push(chess.Move.from_uci(move))
+            converted_move = self.move_conversion(move)
+            piece = converted_move[0]
+            target = converted_move[1]
+            str_move = str(move)
+
+            self.converted_board[piece[1]][piece[0]], self.converted_board[target[1]][target[0]] = self.converted_board[target[1]][target[0]], self.converted_board[piece[1]][piece[0]]
+            if str_move == "e1g1":
+                self.converted_board[7][7], self.converted_board[7][5] = \
+                self.converted_board[7][5], self.converted_board[7][7]
+            elif str_move=="e1c1":
+                self.converted_board[7][0], self.converted_board[7][2] = \
+                self.converted_board[7][2], self.converted_board[7][0]
+            elif str_move == "e8g8":
+                self.converted_board[0][7], self.converted_board[0][5] = \
+                self.converted_board[0][5], self.converted_board[0][7]
+            elif str_move=="e8c8":
+                self.converted_board[0][0], self.converted_board[0][2] = \
+                self.converted_board[0][2], self.converted_board[0][0]
+
 
 
 
             self.turn = "b"
+        self.num_played_moves+=1
 
-    def convert_to_list(self,fen):
+    #A function for converting FEN's of chess boards into matrixes
+    #def convert_to_list(self,fen):
+    #
+    #
+    #
+    #    board = []
+    #    for row in fen.split('/'):
+    #        brow = []
+    #        for c in row:
+    #            if c == ' ':
+    #                break
+    #            elif c in '12345678':
+    #                brow.extend(['--'] * int(c))
+    #            elif c == 'p':
+    #                brow.append('bp')
+    #            elif c == 'P':
+    #                brow.append('wp')
+    #            elif c > 'Z':
+    #                brow.append('b' + c.upper())
+    #            else:
+    #                brow.append('w' + c)
+    #
+    #        board.append(brow)
+    #    return board
+    #
 
 
 
-        board = []
-        for row in fen.split('/'):
-            brow = []
-            for c in row:
-                if c == ' ':
-                    break
-                elif c in '12345678':
-                    brow.extend(['--'] * int(c))
-                elif c == 'p':
-                    brow.append('bp')
-                elif c == 'P':
-                    brow.append('wp')
-                elif c > 'Z':
-                    brow.append('b' + c.upper())
-                else:
-                    brow.append('w' + c)
 
-            board.append(brow)
-        return board
-
-
-
-
-
+    #The function which calculates the materials and adjusting the values according to where they should be placed
     def material_eval(self):
         materialw = 0
         materialb = 0
@@ -166,47 +271,73 @@ class Game():
                 materialb -= len(self.board.pieces(piece_type=i, color=False)) * 9
             else:
                 materialb -= len(self.board.pieces(piece_type=i, color=False)) * i
-        current_board=self.convert_to_list(self.board.fen())
-        for x in range(0,len(current_board)):
-            for y in range(0,len(current_board[x])):
-                if current_board[x][y]=="wN":
-                    materialw+=self.knight_point_board[x][y]/24
-                elif current_board[x][y]=="bN":
-                    materialb -= self.knight_point_board[x][y] / 24
-                elif current_board[x][y]=="wp":
-                    materialw+=self.white_pawn_point_board[x][y]/24
-                elif current_board[x][y]=="bp":
-                    materialb-=self.black_pawn_point_board[x][y]/24
-                elif current_board[x][y] == "wB":
-                    materialw += self.white_bishop_point_board[x][y] / 24
 
-                elif current_board[x][y] == "bB":
-                    materialb -= self.black_bishop_point_board[x][y] / 24
-                elif materialw+(-materialb)<=30 :
-                    if current_board[x][y] == "wK":
-                        materialw += self.king_endgame_point_board[x][y] / 12
-                    elif current_board[x][y] == "bK":
-                        materialb -= self.king_endgame_point_board[x][y] / 12
+        for x in range(0,len(self.converted_board)):
+            for y in range(0,len(self.converted_board[x])):
+                if self.converted_board[x][y]=="wN":
+                    materialw+=self.knight_point_board[x][y]/40
+                elif self.converted_board[x][y]=="bN":
+                    materialb -= self.knight_point_board[x][y] / 40
+                elif self.converted_board[x][y]=="wp":
+                    materialw+=self.white_pawn_point_board[x][y]/40
+                elif self.converted_board[x][y]=="bp":
+                    materialb-=self.black_pawn_point_board[x][y]/40
+                elif self.converted_board[x][y] == "wB":
+                    materialw += self.white_bishop_point_board[x][y] / 40
 
-                elif current_board[x][y] == "wK":
-                    materialw += self.white_king_point_board[x][y] / 12
-                elif current_board[x][y] == "bK":
-                    materialb -= self.black_king_point_board[x][y] / 12
+                elif self.converted_board[x][y] == "bB":
+                    materialb -= self.black_bishop_point_board[x][y] / 40
+                #elif materialw+(-materialb)<=30 :
+                #    if self.converted_board[x][y] == "wK":
+                 #       materialw += self.king_endgame_point_board[x][y] / 40
+                 #   elif self.converted_board[x][y] == "bK":
+                  #      materialb -= self.king_endgame_point_board[x][y] / 40
+
+                elif self.converted_board[x][y] == "wK":
+                    materialw += self.white_king_point_board[x][y] / 40
+                elif self.converted_board[x][y] == "bK":
+                    materialb -= self.black_king_point_board[x][y] / 40
+                #elif(self.converted_board[x][y]=="wQ" or self.converted_board[x][y]=="bQ"):
+                #    if self.num_played_moves>20:
+                #        if self.converted_board[x][y] == "wQ":
+                #
+                #            materialw += self.white_queen_point_board_middlegame[x][y] / 50
+                #        if self.converted_board[x][y] == "bQ":
+                #            materialb -= self.black_queen_point_board_middlegame[x][y] / 50
+                #    else:
+                #        if self.converted_board[x][y] == "wQ":
+                #            materialw += self.white_queen_point_board_opening[x][y] / 60
+                #        if self.converted_board[x][y] == "bQ":
+                #            materialb -= self.black_queen_point_board_opening[x][y] / 60
+
+
+                elif self.converted_board[x][y] == "wR":
+                    materialw += self.rook_point_board[x][y] / 40
+                elif self.converted_board[x][y] == "bR":
+                    materialb -= self.rook_point_board[x][y] / 40
+
 
 
 
         return materialw + materialb
+
+    #A function for undoing the move(used in minimax algorithm)
     def undo_move(self,last_fen):
-        self.boards.remove(self.board)
+
         self.board.set_fen(last_fen)
         if(self.turn=="b"):
             self.turn = "w"
 
         else:
             self.turn="b"
+        self.num_played_moves-=1
+
+    #The function for ordering the moves for better alpha-beta pruning:1-Checking moves,2-Taking moves,3-Other moves
     def order_moves(self,actions):
-        checks=[]
-        takes=[]
+        self.takes=[]
+        self.checks=[]
+
+
         normal_moves=[]
         ordered_actions=[]
         last_fen = self.board.fen()
@@ -218,21 +349,21 @@ class Game():
             self.play_move(action,False)
 
             if self.board.is_check():
-                checks.append(action)
-            elif self.material_eval()>material_eval:
-                takes.append(action)
+                self.checks.append(action)
+            elif self.material_eval()-material_eval>=1:
+                self.takes.append(action)
             else:
                 normal_moves.append(action)
 
             self.undo_move(last_fen)
-        for move in checks:
-            ordered_actions.append(move)
-        for move in takes:
-            ordered_actions.append(move)
-        for move in normal_moves:
-            ordered_actions.append(move)
+
+        ordered_actions.extend(self.checks)
+        ordered_actions.extend(self.takes)
+        ordered_actions.extend(normal_moves)
+
         return ordered_actions
 
+    #Returns an integer according to the winner
     def utility(self):
         winner=self.winner()
         if winner=="w":
@@ -240,9 +371,44 @@ class Game():
         elif winner=="b":
             return -math.inf
         return self.material_eval()
+    def move_conversion(self,move):
+        letters=["a","b","c","d","e","f","g","h"]
+        numbers=["8","7","6","5","4","3","2","1"]
+        str_move=str(move)
 
+
+        piece=str_move[0]+str_move[1]
+
+        target=str_move[2]+str_move[3]
+
+        converted_piece=[]
+        converted_target=[]
+        for letter in range(0,len(letters)):
+            if letters[letter]==piece[0]:
+
+                converted_piece.append(letter)
+            if letters[letter]==target[0]:
+                converted_target.append(letter)
+            if len(converted_piece)>0 and len(converted_target)>0:
+                break
+        for number in range(0,len(numbers)):
+            if numbers[number]==piece[1]:
+
+                converted_piece.append(number)
+            if numbers[number]==target[1]:
+                converted_target.append(number)
+            if len(converted_piece)>1 and len(converted_target)>1:
+                break
+        return [converted_piece,converted_target]
+
+
+
+
+
+    #The algorithm
     def minimax(self,depth,alpha,beta):
         best_move=None
+
 
         if depth<=0 or not(self.winner()==False):
 
@@ -259,10 +425,13 @@ class Game():
                 last_fen=self.board.fen()
 
 
+
                 self.play_move(move,False)
+                if move in self.takes or move in self.checks:
 
-
-                score = self.minimax(depth-1, alpha, beta)[0]
+                    score = self.minimax(depth, alpha, beta)[0]
+                else:
+                    score = self.minimax(depth - 1, alpha, beta)[0]
 
                 alpha=max(alpha,score)
 
@@ -275,6 +444,7 @@ class Game():
                 if (beta <= alpha):
                     break
 
+
             return best_score,best_move
         else:
 
@@ -285,11 +455,17 @@ class Game():
                 last_fen=self.board.fen()
 
 
+
                 self.play_move(move,False)
+                if move in self.takes or move in self.checks:
+
+
+                    score = self.minimax(depth, alpha, beta)[0]
+                else:
+                    score = self.minimax(depth - 1, alpha, beta)[0]
 
 
 
-                score = self.minimax(depth - 1, alpha, beta)[0]
 
                 beta=min(beta,score)
 
@@ -304,26 +480,41 @@ class Game():
 
             return best_score, best_move
 
-DEPTH=3
+DEPTH=4
 def main():
     game = Game()
     while not(game.winner()):
 
+
+
+
+
         print(game.turn)
         print(game.board)
-
-        move=input("Your move...")
-        game.play_move(move,True)
-        game.last_fen=game.board.fen()
-        print(game.board)
+        move = input("Your move...")
+        game.play_move(move, True)
+        game.last_fen = game.board.fen()
+        book_moves=game.book()
         print("AI is thinking...")
-        minimax=game.minimax(DEPTH,-math.inf,math.inf)
-
-
-        aimove=minimax[1]
+        if len(book_moves)>0:
+            aimove=random.choice(book_moves)
+            eval="Book"
+        else:
+            minimax = game.minimax(DEPTH, -math.inf, math.inf)
+            aimove = minimax[1]
+            eval=minimax[0]
+        print("Eval:", eval)
 
         game.last_fen = game.board.fen()
-        game.play_move(aimove,False)
+        game.play_move(aimove, False)
+
+
+
+
+
+
+
+
     if(game.winner()=="w"):
         print("Congratulations you won")
     elif(game.winner()=="b"):
