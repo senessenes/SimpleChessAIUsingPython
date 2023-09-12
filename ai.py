@@ -25,39 +25,39 @@ class Game():
             [2,2,2,5,5,2,2,1],
             [1,2,2,2,2,2,2,1]]
 
-        self.white_pawn_point_board = [[9,10, 10, 11, 11, 10, 10, 9],
-                                   [1, 4, 6, 6, 6, 6, 4, 1],
-                                   [1, 4, 4, 4, 4, 4, 4,1],
-                                   [1, 6, 9, 12, 12, 9, 6,1],
-                                   [1, 6, 9, 12, 12, 9, 6, 1],
-                                   [1, 6, 6, 10, 10, 6, 6,1],
-                                    [1, 4, 6, 6, 6, 6, 4, 1],
+        self.white_pawn_point_board = [[10,10, 10, 11, 11, 10, 10, 10],
+                                   [0, 1, 3, 3, 3, 3, 1, 0],
+                                   [0, 1, 1, 1, 1, 1, 1,0],
+                                   [0, 3, 6, 9, 9, 6, 3,0],
+                                   [0, 3, 6, 9, 9, 9, 3, 0],
+                                   [0, 3, 6, 7, 7, 6, 3,0],
+                                    [0, 1, 3, 3, 3, 3, 1, 0],
                                    [0, 0, 0, 0, 0, 0, 0, 0]]
         self.black_pawn_point_board = [[0, 0, 0, 0, 0, 0, 0, 0],
-                                       [1, 4, 6, 6, 6, 6, 4, 1],
-                                       [1, 6, 6, 10, 10, 6, 6, 1],
-                                       [1, 6, 9, 12, 12, 9, 6, 1],
-                                        [1, 6, 9, 12, 12, 9, 6,1],
-                                       [1, 4, 4, 4, 4, 4, 4, 1],
-                                       [1, 4, 6, 6, 6, 6, 4, 1],
-                                   [9,10, 10, 11, 11, 10, 10, 9]]
+                                       [0, 1, 3,3, 3, 3, 1, 0],
+                                       [0, 3, 6, 7, 7, 6, 3, 0],
+                                       [0, 3, 6, 9, 9, 6, 3, 0],
+                                        [0, 3, 6, 9, 9, 6, 3,0],
+                                       [0, 1, 1, 1, 1, 1, 1, 0],
+                                       [0, 1, 3, 3, 3, 3, 1, 0],
+                                   [10,10, 10, 11, 11, 10, 10, 10]]
 
-        self.white_bishop_point_board =              [[8, 8, 8, 8, 8, 8, 8, 8],
-                                   [8, 9, 9, 9, 9, 9, 9, 8],
-                                   [8, 9, 9, 12, 12, 9, 10, 8],
-                                   [8, 9, 11, 9, 9, 11, 9, 8],
-                                   [8, 9, 11, 9, 9, 11, 9, 8],
-                                   [8, 9, 9, 10, 10, 9, 9, 8],
-                                   [8, 9, 9, 9, 9, 9, 9, 8],
-                                   [8, 8, 8, 8, 8, 8, 8, 8], ]
-        self.black_bishop_point_board = [[8, 8, 8, 8, 8, 8, 8, 8],
-                                         [8, 9, 9, 9, 9, 9, 9, 8],
-                                         [8, 9, 9, 10, 10, 9, 10, 8],
-                                         [8, 9, 11, 9, 9, 11, 9, 8],
-                                         [8, 9, 11, 9, 9, 11, 9, 8],
-                                         [8, 9, 9, 12, 12, 9, 9, 8],
-                                         [8, 9, 9, 9, 9, 9, 9, 8],
-                                         [8, 8, 8, 8, 8, 8, 8, 8], ]
+        self.white_bishop_point_board =              [[3, 3, 3, 3, 3, 3, 3, 3],
+                                   [3, 4, 4, 4, 4, 4, 4, 4],
+                                   [4, 5, 5, 8, 8, 5, 6, 4],
+                                   [4, 5, 7, 5, 5, 7, 5, 4],
+                                   [4, 5, 7, 5, 5, 7, 5, 4],
+                                   [4, 5, 5, 6, 6, 5, 5, 4],
+                                   [4, 5, 5, 5, 5, 5, 5, 4],
+                                   [4, 4, 4, 4, 4, 4, 4,4], ]
+        self.black_bishop_point_board =  [[4, 4, 4, 4, 4, 4, 4,4],
+                                        [4, 5, 5, 5, 5, 5, 5, 4],
+                                        [4, 5, 5, 6, 6, 5, 5, 4],
+                                          [4, 5, 7, 5, 5, 7, 5, 4],
+                                        [4, 5, 7, 5, 5, 7, 5, 4],
+                                        [4, 5, 5, 8, 8, 5, 6, 4],
+                                        [3, 4, 4, 4, 4, 4, 4, 4],
+                                        [3, 3, 3, 3, 3, 3, 3, 3]]
         self.white_king_point_board = [[0, 0, 0, 0, 0, 0, 0, 0],
                                          [0, 0, 0, 0, 0, 0, 0, 0],
                                          [0, 0, 0, 0, 0, 0, 0, 0],
@@ -287,28 +287,28 @@ class Game():
 
                 elif self.converted_board[x][y] == "bB":
                     materialb -= self.black_bishop_point_board[x][y] / 40
-                #elif materialw+(-materialb)<=30 :
-                #    if self.converted_board[x][y] == "wK":
-                 #       materialw += self.king_endgame_point_board[x][y] / 40
-                 #   elif self.converted_board[x][y] == "bK":
-                  #      materialb -= self.king_endgame_point_board[x][y] / 40
+
+
+
+
+
 
                 elif self.converted_board[x][y] == "wK":
                     materialw += self.white_king_point_board[x][y] / 40
                 elif self.converted_board[x][y] == "bK":
                     materialb -= self.black_king_point_board[x][y] / 40
-                #elif(self.converted_board[x][y]=="wQ" or self.converted_board[x][y]=="bQ"):
-                #    if self.num_played_moves>20:
-                #        if self.converted_board[x][y] == "wQ":
-                #
-                #            materialw += self.white_queen_point_board_middlegame[x][y] / 50
-                #        if self.converted_board[x][y] == "bQ":
-                #            materialb -= self.black_queen_point_board_middlegame[x][y] / 50
-                #    else:
-                #        if self.converted_board[x][y] == "wQ":
-                #            materialw += self.white_queen_point_board_opening[x][y] / 60
-                #        if self.converted_board[x][y] == "bQ":
-                #            materialb -= self.black_queen_point_board_opening[x][y] / 60
+                elif(self.converted_board[x][y]=="wQ" or self.converted_board[x][y]=="bQ"):
+                    if self.num_played_moves>40:
+                        if self.converted_board[x][y] == "wQ":
+
+                            materialw += self.white_queen_point_board_middlegame[x][y] / 50
+                        if self.converted_board[x][y] == "bQ":
+                            materialb -= self.black_queen_point_board_middlegame[x][y] / 50
+                    else:
+                        if self.converted_board[x][y] == "wQ":
+                            materialw += self.white_queen_point_board_opening[x][y] / 60
+                        if self.converted_board[x][y] == "bQ":
+                            materialb -= self.black_queen_point_board_opening[x][y] / 60
 
 
                 elif self.converted_board[x][y] == "wR":
@@ -480,7 +480,7 @@ class Game():
 
             return best_score, best_move
 
-DEPTH=4
+DEPTH=3
 def main():
     game = Game()
     while not(game.winner()):
@@ -491,6 +491,7 @@ def main():
 
         print(game.turn)
         print(game.board)
+        print(game.num_played_moves)
         move = input("Your move...")
         game.play_move(move, True)
         game.last_fen = game.board.fen()
@@ -506,6 +507,7 @@ def main():
         print("Eval:", eval)
 
         game.last_fen = game.board.fen()
+        print(aimove)
         game.play_move(aimove, False)
 
 
