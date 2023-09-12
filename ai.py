@@ -252,25 +252,20 @@ class Game():
 
             if (i == 2):
                 materialw += len(self.board.pieces(piece_type=i, color=True)) * 3
-
-            elif (i == 4):
-                materialw += len(self.board.pieces(piece_type=i, color=True)) * 5
-            elif (i == 5):
-                materialw += len(self.board.pieces(piece_type=i, color=True)) * 9
-
-            else:
-                materialw += len(self.board.pieces(piece_type=i, color=True)) * i
-        for i in range(1, 6):
-
-            if (i == 2):
                 materialb -= len(self.board.pieces(piece_type=i, color=False)) * 3
 
             elif (i == 4):
+                materialw += len(self.board.pieces(piece_type=i, color=True)) * 5
                 materialb -= len(self.board.pieces(piece_type=i, color=False)) * 5
             elif (i == 5):
+                materialw += len(self.board.pieces(piece_type=i, color=True)) * 9
                 materialb -= len(self.board.pieces(piece_type=i, color=False)) * 9
+
             else:
+                materialw += len(self.board.pieces(piece_type=i, color=True)) * i
                 materialb -= len(self.board.pieces(piece_type=i, color=False)) * i
+
+
 
         for x in range(0,len(self.converted_board)):
             for y in range(0,len(self.converted_board[x])):
@@ -292,32 +287,16 @@ class Game():
 
 
 
-
+            
                 elif self.converted_board[x][y] == "wK":
                     materialw += self.white_king_point_board[x][y] / 40
                 elif self.converted_board[x][y] == "bK":
                     materialb -= self.black_king_point_board[x][y] / 40
-                elif(self.converted_board[x][y]=="wQ" or self.converted_board[x][y]=="bQ"):
-                    if self.num_played_moves>40:
-                        if self.converted_board[x][y] == "wQ":
 
-                            materialw += self.white_queen_point_board_middlegame[x][y] / 50
-                        if self.converted_board[x][y] == "bQ":
-                            materialb -= self.black_queen_point_board_middlegame[x][y] / 50
-                    else:
-                        if self.converted_board[x][y] == "wQ":
-                            materialw += self.white_queen_point_board_opening[x][y] / 60
-                        if self.converted_board[x][y] == "bQ":
-                            materialb -= self.black_queen_point_board_opening[x][y] / 60
+            
+            
 
-
-                elif self.converted_board[x][y] == "wR":
-                    materialw += self.rook_point_board[x][y] / 40
-                elif self.converted_board[x][y] == "bR":
-                    materialb -= self.rook_point_board[x][y] / 40
-
-
-
+            
 
         return materialw + materialb
 
@@ -350,16 +329,16 @@ class Game():
 
             if self.board.is_check():
                 self.checks.append(action)
-            elif self.material_eval()-material_eval>=1:
+            elif self.material_eval()-material_eval<=-0.8:
                 self.takes.append(action)
             else:
                 normal_moves.append(action)
 
             self.undo_move(last_fen)
 
-        ordered_actions.extend(self.checks)
-        ordered_actions.extend(self.takes)
-        ordered_actions.extend(normal_moves)
+        ordered_actions+=self.checks
+        ordered_actions+=self.takes
+        ordered_actions+=normal_moves
 
         return ordered_actions
 
@@ -480,7 +459,7 @@ class Game():
 
             return best_score, best_move
 
-DEPTH=3
+DEPTH=4
 def main():
     game = Game()
     while not(game.winner()):
